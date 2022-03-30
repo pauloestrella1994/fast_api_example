@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
 
 app = FastAPI()
 
@@ -15,5 +15,5 @@ async def root():
   return 'Hello World'
 
 @app.get("/get-student/{student_id}")
-async def get_student(student_id: int):
+async def get_student(student_id: int = Path(None, description="The id of the student", gt = 0, lt = 3)):
   return students[student_id]
