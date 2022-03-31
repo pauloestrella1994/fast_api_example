@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Path
 from typing import Optional
 
-from models.student import Student
+from models.student import Student, UpdateStudent
 
 
 app = FastAPI()
@@ -33,6 +33,14 @@ def get_student(name: Optional[str] = None):
 def create_student(student_id: int, student: Student):
   if student_id in students:
     return {"Error": "Student exists"}
+
+  students[student_id] = student
+  return students[student_id]
+
+@app.put("/update-student/{student_id}")
+def update_student(student_id: int, student: UpdateStudent):
+  if student_id not in students:
+    return {"Error": "Student not exists"}
 
   students[student_id] = student
   return students[student_id]
