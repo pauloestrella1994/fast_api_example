@@ -1,7 +1,11 @@
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Path, Depends
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from typing import Optional
+from models.books import Books
 
 from models.student import Student, UpdateStudent
+from models.books import Books
 
 
 app = FastAPI()
@@ -52,3 +56,12 @@ def delete_student(student_id: int):
 
   del students[student_id]
   return {"Message": "Student deleted"}
+
+
+@app.post("/books")
+def create_books(book: Books):
+  to_create = Books(
+    title=book.title, 
+    description=book.description
+  )
+  return JSONResponse(status_code=200, content=jsonable_encoder(to_create))

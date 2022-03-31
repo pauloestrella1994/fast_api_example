@@ -8,6 +8,11 @@ authors = ["pauloestrellalabs <paulo.netto@luizalabs.com>"]
 python = "^3.9"
 fastapi = "^0.75.0"
 uvicorn = "^0.17.6"
+SQLAlchemy = "^1.4.33"
+psycopg2-binary = "^2.9.3"
+alembic = "^1.7.7"
+ipython = "^8.2.0"
+pydantic = {extras = ["dotenv"], version = "^1.9.0"}
 
 [tool.poetry.dev-dependencies]
 
