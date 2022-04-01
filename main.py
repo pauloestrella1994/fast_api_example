@@ -22,7 +22,7 @@ async def create_user(user: User):
   except Exception as error:
     raise HTTPException(400, detail=str(error))
 
-@app.delete('/delete/{user_id}', description="Delete User", response_model=Standard, responses={400: {'model': Error}})
+@app.delete('/delete/user/{user_id}', description="Delete User", response_model=Standard, responses={400: {'model': Error}})
 async def create_user(user_id: int):
   try:
     await UserService.delete_user(user_id)
@@ -34,6 +34,14 @@ async def create_user(user_id: int):
 async def add_favorite(favorite: Favorite):
   try:
     await FavoriteService.add_favorite(user_id=favorite.user_id, symbol=favorite.symbol)
+    return Standard(message="Ok")
+  except Exception as error:
+    raise HTTPException(400, detail=str(error))
+
+@app.delete('/delete/favorite/{user_id}', description="Delete Favorite", response_model=Standard, responses={400: {'model': Error}})
+async def favorite_delete(user_id: int, symbol: str):
+  try:
+    await FavoriteService.delete_favorite(user_id=user_id, symbol=symbol)
     return Standard(message="Ok")
   except Exception as error:
     raise HTTPException(400, detail=str(error))

@@ -20,7 +20,10 @@ class FavoriteService:
       session.add(Favorite(user_id=user_id, symbol=symbol))
       await session.commit()
 
-  async def delete_user(user_id):
+  async def delete_favorite(user_id: int, symbol: str):
     async with async_session() as session:
-      await session.execute(delete(User).where(User.id==user_id))
+      await session.execute(delete(Favorite).where(
+        Favorite.user_id==user_id, Favorite.symbol==symbol
+        )
+      )
       await session.commit()
