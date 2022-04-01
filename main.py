@@ -1,3 +1,4 @@
+from asyncio import gather
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -55,13 +56,16 @@ async def get_users():
     raise HTTPException(400, detail=str(error))
 
 @app.get(
-  '/user/day-summary/{symbol}',
+  '/user/day-summary/{user_id}',
   description="List Day summary of your favorite cripto",
   response_model=List[DaySummary], 
   responses={400: {'model': Error}}
 )
-async def day_summary(symbol: str):
+async def day_summary(user_id: int):
   try:
-    return await AssetService.day_summary(symbol=symbol)
+    user = await UserService.get_by_id(user_id)
+    favorites_symbols = [favorite.symbol for favorite in user.favorites]
+    tasks = [AssetService.day_summary(symbol=symbol) for symbol in favorites_symbols]
+    return await gather(*tasks)
   except Exception as error:
     raise HTTPException(400, detail=str(error))
