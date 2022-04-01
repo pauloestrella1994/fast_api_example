@@ -4,8 +4,8 @@ from fastapi.responses import HTMLResponse
 from typing import List
 
 from database.models import User
-from service import FavoriteService, UserService
-from schemas import ListUsers, User, Standard, Error, Favorite
+from service import AssetService, FavoriteService, UserService
+from schemas import ListUsers, User, Standard, Error, Favorite, DaySummary
 
 
 app = FastAPI()
@@ -47,9 +47,21 @@ async def favorite_delete(user_id: int, symbol: str):
   except Exception as error:
     raise HTTPException(400, detail=str(error))
 
-@app.post('/users/', description="List Users", response_model=List[ListUsers], responses={400: {'model': Error}})
+@app.get('/users/', description="List Users", response_model=List[ListUsers], responses={400: {'model': Error}})
 async def get_users():
   try:
     return await UserService.list_user()
+  except Exception as error:
+    raise HTTPException(400, detail=str(error))
+
+@app.get(
+  '/user/day-summary/{symbol}',
+  description="List Day summary of your favorite cripto",
+  response_model=List[DaySummary], 
+  responses={400: {'model': Error}}
+)
+async def day_summary(symbol: str):
+  try:
+    return await AssetService.day_summary(symbol=symbol)
   except Exception as error:
     raise HTTPException(400, detail=str(error))

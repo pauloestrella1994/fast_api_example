@@ -30,3 +30,8 @@ class ListUsers(BaseModel):
 
   class Config:
     orm_mode = True
+
+class DaySummary(BaseModel):
+  highest: float
+  lowest: float
+  symbol: str

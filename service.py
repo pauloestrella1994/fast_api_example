@@ -1,7 +1,9 @@
+from datetime import date, timedelta
 from database.models import User, Favorite
 from sqlalchemy.future import select
 from database.connection import async_session
 from sqlalchemy import delete
+from aiohttp import ClientSession
 
 
 class UserService:
@@ -34,3 +36,16 @@ class FavoriteService:
         )
       )
       await session.commit()
+
+class AssetService:
+  async def day_summary(symbol: str):
+    async with ClientSession() as session:
+      yesterday = date.today() - timedelta(days=1)
+      url = f"https://www.mercadobitcoin.net/api/{symbol.upper()}/day-summary/{yesterday.year}/{yesterday.month}/{yesterday.day}"
+      response = await session.get(url)
+      data = await response.json()
+      return {
+        "highest": data['highest'],
+        "lowest": data['lowest'],
+        "symbol": symbol
+      }
