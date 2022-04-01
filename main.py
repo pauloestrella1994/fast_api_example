@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from typing import List
 
 from database.models import User
 from service import FavoriteService, UserService
-from schemas import User, Standard, Error, Favorite
+from schemas import ListUsers, User, Standard, Error, Favorite
 
 
 app = FastAPI()
@@ -43,5 +44,12 @@ async def favorite_delete(user_id: int, symbol: str):
   try:
     await FavoriteService.delete_favorite(user_id=user_id, symbol=symbol)
     return Standard(message="Ok")
+  except Exception as error:
+    raise HTTPException(400, detail=str(error))
+
+@app.post('/users/', description="List Users", response_model=List[ListUsers], responses={400: {'model': Error}})
+async def get_users():
+  try:
+    return await UserService.list_user()
   except Exception as error:
     raise HTTPException(400, detail=str(error))

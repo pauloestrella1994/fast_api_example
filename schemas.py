@@ -1,5 +1,5 @@
-from email import message
 from pydantic import BaseModel
+from typing import List
 
 
 class User(BaseModel):
@@ -14,3 +14,19 @@ class Error(Standard):
 class Favorite(BaseModel):
   user_id: int
   symbol: str
+
+class Favorites(BaseModel):
+  id: int
+  symbol: str
+  user_id: int
+
+  class Config:
+    orm_mode = True
+
+class ListUsers(BaseModel):
+  id: int
+  name: str
+  favorites: List[Favorites]
+
+  class Config:
+    orm_mode = True
