@@ -1,4 +1,3 @@
-from ast import Str
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql.schema import Column

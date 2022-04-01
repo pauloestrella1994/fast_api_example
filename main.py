@@ -1,12 +1,15 @@
+from datetime import date, timedelta
 from asyncio import gather
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from typing import List
+from database.connection import SessionLocal
+from requests import get
 
 from database.models import User
 from service import AssetService, FavoriteService, UserService
-from schemas import ListUsers, User, Standard, Error, Favorite, DaySummary
+from schemas import ListUsers, UserSchema, Standard, Error, Favorite, DaySummary
 
 
 app = FastAPI()
@@ -17,7 +20,7 @@ async def root(request: Request):
   return templates.TemplateResponse("root.html", {"request": request})
 
 @app.post('/user/create', description="Create User", response_model=Standard, responses={400: {'model': Error}})
-async def create_user(user: User):
+async def create_user(user: UserSchema):
   try:
     await UserService.create_user(name=user.name)
     return Standard(message="Ok")
@@ -55,8 +58,9 @@ async def get_users():
   except Exception as error:
     raise HTTPException(400, detail=str(error))
 
+#async
 @app.get(
-  '/user/day-summary/{user_id}',
+  '/user/day-summary/async/{user_id}',
   description="List Day summary of your favorite cripto",
   response_model=List[DaySummary], 
   responses={400: {'model': Error}}
@@ -69,3 +73,29 @@ async def day_summary(user_id: int):
     return await gather(*tasks)
   except Exception as error:
     raise HTTPException(400, detail=str(error))
+
+# sync
+@app.get(
+  '/assets/day_summary/sync/{user_id}',
+  description="List Day summary of your favorite cripto",
+  response_model=List[DaySummary], 
+  responses={400: {'model': Error}}
+)
+def day_summary(user_id: int):
+    today = date.today() - timedelta(days=1)
+
+    with SessionLocal() as session:
+        user = session.query(User).filter(User.id==user_id).first()
+        symbols = [favorite.symbol for favorite in user.favorites]
+    
+    result = []
+
+    for symbol in symbols:
+        data = get(f'https://www.mercadobitcoin.net/api/{symbol}/day-summary/{today.year}/{today.month}/{today.day}/').json()
+        result.append({
+            'symbol': symbol,
+            'lowest': data['lowest'],
+            'highest': data['highest']
+        })
+    
+    return result
