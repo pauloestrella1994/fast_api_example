@@ -8,5 +8,5 @@ class User(BaseModel):
 class Standard(BaseModel):
   message: str
 
-class AlternativeOutput(Standard):
+class Error(Standard):
   details: str
