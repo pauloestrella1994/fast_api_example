@@ -10,3 +10,7 @@ class Standard(BaseModel):
 
 class Error(Standard):
   details: str
+
+class Favorite(BaseModel):
+  user_id: int
+  symbol: str
