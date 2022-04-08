@@ -96,3 +96,9 @@ Or even, accessing redoc:
 ```
 http://127.0.0.1:8000/redoc
 ```
+
+Run tests
+
+```
+make run-tests
+```
